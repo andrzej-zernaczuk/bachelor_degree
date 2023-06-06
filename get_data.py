@@ -25,13 +25,11 @@ def accept_cookies():
     driver.execute_script("arguments[0].click()", policy_button)
 
 
-
 def get_players_stats(years):
 
     accept_cookies()
-
     for year in years:
-        if not os.path.exists('./players_stats/players_stats_{year}.csv'):
+        if not os.path.exists('./stats/players_stats_{year}.csv'):
             players_stats_url = f"https://www.basketball-reference.com/leagues/NBA_{year}_per_game.html"
             driver.get(players_stats_url)
 
