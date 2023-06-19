@@ -1,10 +1,10 @@
 import pandas as pd
 
 
-def clean_stats(year: int, drop_cols: list):
+def clean_stats(year: int, game_type: str, drop_cols: list):
     """Get rid of unnecessary data"""
 
-    with open(f'./stats/player_stats/players_stats_{year}.csv', 'r', encoding="utf-8") as file:
+    with open(f'./stats/player_stats/{game_type}/players_stats_{year}.csv', 'r', encoding="utf-8") as file:
         df = pd.read_csv(file)
 
     df_dropped = df.drop(drop_cols, axis=1)
@@ -18,7 +18,7 @@ def clean_stats(year: int, drop_cols: list):
 def unique_players(year: int):
     """Get players"""
 
-    with open(f'./stats/player_stats/players_stats_{year}.csv', 'r', encoding="utf-8") as file:
+    with open(f'./stats/player_stats/leagues/players_stats_{year}.csv', 'r', encoding="utf-8") as file:
         df = pd.read_csv(file)
 
     players = df["Player-additional"].values.tolist()
