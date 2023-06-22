@@ -1,5 +1,3 @@
-import pandas as pd
-
 from get_data import get_players_stats
 from clean_data import clean_stats, unique_players, consolidate_personal_awards
 
@@ -17,7 +15,8 @@ get_players_stats(years, game_types)
 personal_awards = consolidate_personal_awards()
 for year in years:
     distinct_players.extend(unique_players(year))
+    player_stats[year] = {}
     for game_type in game_types:
-        player_stats[year] = clean_stats(year, game_type, columns_to_drop)
+        player_stats[year][game_type] = clean_stats(year, game_type, columns_to_drop)
 
 distinct_players = set(distinct_players)

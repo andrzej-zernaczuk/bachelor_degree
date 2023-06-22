@@ -1,4 +1,3 @@
-from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver import ActionChains
@@ -25,16 +24,23 @@ def accept_cookies():
     policy_button = driver.find_element(By.ID, "qc-cmp2-ui").find_element(By.CSS_SELECTOR, "button.css-47sehv")
     driver.execute_script("arguments[0].click()", policy_button)
 
+def close_popup():
+    """Close popup which appears during scrapping"""
+    print("Closing popup")
+    close_button = driver.find_element(By.ID, "modal-container").find_element(By.ID, "modal-close")
+    driver.execute_script("arguments[0].click()", close_button)
 
 def get_players_stats(years: list, game_types: list):
     """Get player stats per season"""
     accept_cookies()
     for year in years:
         for game_type in game_types:
-            if not os.path.exists(f'./stats/player_stats/{game_type}/players_stats_{year}.csv'):
+            if not os.path.exists(f'./data/player_stats/{game_type}/players_stats_{year}.csv'):
                 players_stats_url = f"https://www.basketball-reference.com/{game_type}/NBA_{year}_per_game.html"
                 driver.get(players_stats_url)
-                time.sleep(20)
+
+                #in case of popup appearance, it stays hidden on site most of the time, closing it doesn't break the site
+                close_popup()
 
                 stats_table = driver.find_element(By.ID, "per_game_stats_link")
                 driver.execute_script("arguments[0].scrollIntoView();", stats_table)
@@ -51,6 +57,6 @@ def get_players_stats(years: list, game_types: list):
                 partition_tuple = stats_copied.partition("Rk,Player,")
                 stats_csv = partition_tuple[1] + partition_tuple[2]
 
-                with open(f'./stats/player_stats/{game_type}/players_stats_{year}.csv', 'w', encoding="utf-8") as file:
+                with open(f'./data/player_stats/{game_type}/players_stats_{year}.csv', 'w', encoding="utf-8") as file:
                     print(f"Saving {game_type} player stats from {year}")
                     file.write(stats_csv)
