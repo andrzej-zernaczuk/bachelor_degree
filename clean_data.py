@@ -1,16 +1,20 @@
 import pandas as pd
 
 
-def clean_stats(year: int, game_type: str, drop_cols: list):
-    """Get rid of unnecessary data"""
+def clean_stats(year: int, game_type: str, stats_category: str, drop_cols: list):
+    """Get rid ofunnecessary data"""
 
-    with open(f'./data/player_stats/{game_type}/players_stats_{year}.csv', 'r', encoding="utf-8") as file:
+    with open(f'./data/{stats_category}/{game_type}/{stats_category}_{year}.csv', 'r', encoding="utf-8") as file:
         df = pd.read_csv(file)
 
     df_dropped = df.drop(drop_cols, axis=1)
 
-    filtered_df = df_dropped.drop_duplicates(subset='ID', keep="first")
-    filtered_df.reset_index(drop=True, inplace=True)
+    if stats_category == "players_stats":
+        filtered_df = df_dropped.drop_duplicates(subset='ID', keep="first")
+        filtered_df.reset_index(drop=True, inplace=True)
+    if stats_category == "teams_stats":
+        filtered_df = df_dropped[df_dropped.Team != "League Average"]
+        filtered_df['Team'] = filtered_df['Team'].str.replace('*', '')
 
     return filtered_df
 
@@ -18,7 +22,7 @@ def clean_stats(year: int, game_type: str, drop_cols: list):
 def unique_players(year: int):
     """Get players"""
 
-    with open(f'./data/player_stats/leagues/players_stats_{year}.csv', 'r', encoding="utf-8") as file:
+    with open(f'./data/players_stats/leagues/players_stats_{year}.csv', 'r', encoding="utf-8") as file:
         df = pd.read_csv(file)
 
     players = df["ID"].values.tolist()

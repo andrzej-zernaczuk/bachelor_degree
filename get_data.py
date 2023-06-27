@@ -35,7 +35,7 @@ def get_players_stats(years: list, game_types: list):
     accept_cookies()
     for year in years:
         for game_type in game_types:
-            if not os.path.exists(f'./data/player_stats/{game_type}/players_stats_{year}.csv'):
+            if not os.path.exists(f'./data/players_stats/{game_type}/players_stats_{year}.csv'):
                 players_stats_url = f"https://www.basketball-reference.com/{game_type}/NBA_{year}_per_game.html"
                 driver.get(players_stats_url)
 
@@ -57,6 +57,38 @@ def get_players_stats(years: list, game_types: list):
                 partition_tuple = stats_copied.partition("Rk,Player,")
                 stats_csv = partition_tuple[1] + partition_tuple[2]
 
-                with open(f'./data/player_stats/{game_type}/players_stats_{year}.csv', 'w', encoding="utf-8") as file:
+                with open(f'./data/players_stats/{game_type}/players_stats_{year}.csv', 'w', encoding="utf-8") as file:
                     print(f"Saving {game_type} player stats from {year}")
+                    file.write(stats_csv)
+
+def get_team_stats(years: list, game_types: list):
+    """Get team stats per season"""
+    for year in years:
+        for game_type in game_types:
+            if not os.path.exists(f'./data/teams_stats/{game_type}/teams_stats_{year}.csv'):
+                players_stats_url = f"https://www.basketball-reference.com/{game_type}/NBA_{year}.html"
+                driver.get(players_stats_url)
+
+                #in case of popup appearance, it stays hidden on site most of the time, closing it doesn't break the site
+                close_popup()
+
+                stats_table = driver.find_element(By.ID, "totals-team_link")
+                driver.execute_script("arguments[0].scrollIntoView();", stats_table)
+
+                share_export_menu = driver.find_element(By.ID, "content").find_element(By.ID, "all_totals_team-opponent").find_element(By.CLASS_NAME, "section_heading_text").find_element(By.CSS_SELECTOR, "li.hasmore")
+                time.sleep(2)
+                actions.move_to_element(share_export_menu).perform()
+
+                csv_option = driver.find_element(By.ID, "content").find_element(By.ID, "all_totals_team-opponent").find_element(By.CLASS_NAME, "section_heading_text").find_element(By.CSS_SELECTOR, "li.hasmore").find_element(By.XPATH, '//*[@id="totals-team_sh"]/div/ul/li[2]/div/ul/li[3]/button')
+                time.sleep(2)
+                actions.move_to_element(csv_option).click().perform()
+
+                stats_copied = driver.find_element(By.ID, "div_totals-team").find_element(By.ID, "csv_totals-team").text
+                if "Rk,Tm," in stats_copied:
+                    stats_copied = stats_copied.replace("Rk,Tm,", "Rk,Team,")
+                partition_tuple = stats_copied.partition("Rk,Team,")
+                stats_csv = partition_tuple[1] + partition_tuple[2]
+
+                with open(f'./data/teams_stats/{game_type}/teams_stats_{year}.csv', 'w', encoding="utf-8") as file:
+                    print(f"Saving {game_type} teams stats from {year}")
                     file.write(stats_csv)
