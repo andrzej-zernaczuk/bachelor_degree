@@ -1,5 +1,7 @@
 from get_data import get_players_stats, get_team_stats
 from clean_data import clean_stats, unique_players, consolidate_personal_awards
+import csv
+import pickle
 
 years = list(range(2001, 2023))
 game_types = ["playoffs", "leagues"]
@@ -28,3 +30,16 @@ for year in years:
         teams_stats[year][game_type] = clean_stats(year, game_type, "teams_stats", teams_columns_to_drop)
 
 distinct_players = set(distinct_players)
+
+# store processed data
+personal_awards.to_csv('./data/transformed_data/personal_awards.csv', index=False, encoding='utf-8')
+
+with open('./data/transformed_data/distinct_players.csv', 'w') as dist_play:
+    write = csv.writer(dist_play)
+    write.writerow(distinct_players)
+
+with open('./data/transformed_data/players_stats.pickle', 'wb') as play_stats:
+    pickle.dump(players_stats, play_stats)
+
+with open('./data/transformed_data/teams_stats.pickle', 'wb') as team_stats:
+    pickle.dump(teams_stats, team_stats)
