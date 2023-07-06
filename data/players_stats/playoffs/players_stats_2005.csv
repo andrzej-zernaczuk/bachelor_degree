@@ -1,4 +1,4 @@
-Rk,Player,Pos,Age,Tm,G,GS,MP,FG,FGA,FG%,3P,3PA,3P%,2P,2PA,2P%,eFG%,FT,FTA,FT%,ORB,DRB,TRB,AST,STL,BLK,TOV,PF,PTS,ID
+Rk,Player,Pos,Age,Tm,G,GS,MP,FG,FGA,FG%,3P,3PA,3P%,2P,2PA,2P%,eFG%,FT,FTA,FT%,ORB,DRB,TRB,AST,STL,BLK,TOV,PF,PTS,Player-additional
 1,Ray Allen*,SG,29,SEA,11,11,39.6,9.3,19.5,.474,2.8,7.5,.378,6.5,12.1,.534,.547,5.1,5.7,.889,1.1,3.2,4.3,3.9,1.3,0.4,3.1,2.0,26.5,allenra02
 2,Tony Allen,SG,23,BOS,7,3,12.9,1.1,2.6,.444,0.0,0.0,,1.1,2.6,.444,.444,0.4,1.0,.429,0.6,1.1,1.7,0.3,0.4,0.3,0.7,2.4,2.7,allento01
 3,Shandon Anderson,SF,31,MIA,8,0,12.1,0.4,1.5,.250,0.0,0.1,.000,0.4,1.4,.273,.250,0.3,0.3,1.000,0.4,2.0,2.4,1.0,0.6,0.0,0.8,1.3,1.0,andersh01

@@ -1,4 +1,4 @@
-Rk,Player,Pos,Age,Tm,G,GS,MP,FG,FGA,FG%,3P,3PA,3P%,2P,2PA,2P%,eFG%,FT,FTA,FT%,ORB,DRB,TRB,AST,STL,BLK,TOV,PF,PTS,ID
+Rk,Player,Pos,Age,Tm,G,GS,MP,FG,FGA,FG%,3P,3PA,3P%,2P,2PA,2P%,eFG%,FT,FTA,FT%,ORB,DRB,TRB,AST,STL,BLK,TOV,PF,PTS,Player-additional
 1,Arron Afflalo,SG,25,DEN,3,3,28.3,4.0,11.3,.353,1.0,4.0,.250,3.0,7.3,.409,.397,2.3,2.7,.875,0.0,3.0,3.0,2.3,0.0,0.0,1.0,3.3,11.3,afflaar01
 2,LaMarcus Aldridge,PF,25,POR,6,6,43.0,8.8,19.2,.461,0.0,0.0,,8.8,19.2,.461,.461,3.2,4.0,.792,2.7,4.8,7.5,1.3,1.3,1.7,1.5,3.2,20.8,aldrila01
 3,Malik Allen,PF,32,ORL,1,0,7.0,0.0,1.0,.000,0.0,0.0,,0.0,1.0,.000,.000,1.0,2.0,.500,0.0,1.0,1.0,0.0,0.0,0.0,0.0,2.0,1.0,allenma01

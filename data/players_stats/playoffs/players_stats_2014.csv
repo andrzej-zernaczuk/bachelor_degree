@@ -1,4 +1,4 @@
-Rk,Player,Pos,Age,Tm,G,GS,MP,FG,FGA,FG%,3P,3PA,3P%,2P,2PA,2P%,eFG%,FT,FTA,FT%,ORB,DRB,TRB,AST,STL,BLK,TOV,PF,PTS,ID
+Rk,Player,Pos,Age,Tm,G,GS,MP,FG,FGA,FG%,3P,3PA,3P%,2P,2PA,2P%,eFG%,FT,FTA,FT%,ORB,DRB,TRB,AST,STL,BLK,TOV,PF,PTS,Player-additional
 1,Steven Adams,C,20,OKC,18,0,18.4,1.7,2.5,.689,0.0,0.0,,1.7,2.5,.689,.689,0.4,1.3,.348,1.2,2.9,4.1,0.2,0.1,1.3,0.6,2.7,3.9,adamsst01
 2,LaMarcus Aldridge,PF,28,POR,11,11,40.1,10.3,22.7,.452,0.2,0.3,.667,10.1,22.5,.449,.456,5.5,6.8,.800,2.7,7.9,10.6,1.5,0.6,1.6,1.7,3.6,26.2,aldrila01
 3,Lavoy Allen,PF,24,IND,4,0,3.8,0.5,1.0,.500,0.0,0.0,,0.5,1.0,.500,.500,0.0,0.0,,0.3,1.0,1.3,0.3,0.0,0.0,0.0,0.3,1.0,allenla01

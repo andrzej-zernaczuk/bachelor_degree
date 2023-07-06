@@ -1,4 +1,4 @@
-Rk,Player,Pos,Age,Tm,G,GS,MP,FG,FGA,FG%,3P,3PA,3P%,2P,2PA,2P%,eFG%,FT,FTA,FT%,ORB,DRB,TRB,AST,STL,BLK,TOV,PF,PTS,ID
+Rk,Player,Pos,Age,Tm,G,GS,MP,FG,FGA,FG%,3P,3PA,3P%,2P,2PA,2P%,eFG%,FT,FTA,FT%,ORB,DRB,TRB,AST,STL,BLK,TOV,PF,PTS,Player-additional
 1,Jeff Adrien,PF,24,GSW,23,0,8.5,1.0,2.3,.426,0.0,0.0,,1.0,2.3,.426,.426,0.5,0.8,.579,1.0,1.5,2.5,0.4,0.2,0.2,0.4,1.2,2.5,adrieje01
 2,Arron Afflalo,SG,25,DEN,69,69,33.7,4.5,9.1,.498,1.5,3.6,.423,3.0,5.5,.546,.581,2.0,2.4,.847,0.7,3.0,3.6,2.4,0.5,0.4,1.0,2.2,12.6,afflaar01
 3,Maurice Ager,SG,26,MIN,4,0,7.3,1.5,2.8,.545,0.8,1.0,.750,0.8,1.8,.429,.682,0.0,0.0,,0.0,0.5,0.5,0.3,0.3,0.0,1.0,1.0,3.8,agerma01

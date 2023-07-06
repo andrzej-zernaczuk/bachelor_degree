@@ -1,4 +1,4 @@
-Rk,Player,Pos,Age,Tm,G,GS,MP,FG,FGA,FG%,3P,3PA,3P%,2P,2PA,2P%,eFG%,FT,FTA,FT%,ORB,DRB,TRB,AST,STL,BLK,TOV,PF,PTS,ID
+Rk,Player,Pos,Age,Tm,G,GS,MP,FG,FGA,FG%,3P,3PA,3P%,2P,2PA,2P%,eFG%,FT,FTA,FT%,ORB,DRB,TRB,AST,STL,BLK,TOV,PF,PTS,Player-additional
 1,Álex Abrines,SG,23,OKC,5,0,16.0,1.6,4.6,.348,1.0,3.4,.294,0.6,1.2,.500,.457,0.6,0.8,.750,0.4,1.4,1.8,0.8,0.0,0.0,0.0,1.6,4.8,abrinal01
 2,Steven Adams,C,23,OKC,5,5,31.4,3.6,5.6,.643,0.0,0.0,,3.6,5.6,.643,.643,0.8,2.2,.364,3.4,3.4,6.8,1.4,1.2,1.8,0.8,2.8,8.0,adamsst01
 3,LaMarcus Aldridge,PF,31,SAS,16,16,33.6,6.9,15.0,.458,0.1,0.9,.143,6.8,14.1,.478,.463,2.6,3.4,.764,2.7,4.8,7.4,1.5,0.6,1.0,1.8,2.6,16.5,aldrila01

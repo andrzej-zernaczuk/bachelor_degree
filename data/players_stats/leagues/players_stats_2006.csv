@@ -1,4 +1,4 @@
-Rk,Player,Pos,Age,Tm,G,GS,MP,FG,FGA,FG%,3P,3PA,3P%,2P,2PA,2P%,eFG%,FT,FTA,FT%,ORB,DRB,TRB,AST,STL,BLK,TOV,PF,PTS,ID
+Rk,Player,Pos,Age,Tm,G,GS,MP,FG,FGA,FG%,3P,3PA,3P%,2P,2PA,2P%,eFG%,FT,FTA,FT%,ORB,DRB,TRB,AST,STL,BLK,TOV,PF,PTS,Player-additional
 1,Shareef Abdur-Rahim,PF,29,SAC,72,30,27.2,4.6,8.8,.525,0.1,0.3,.227,4.5,8.5,.536,.529,3.0,3.9,.784,1.5,3.5,5.0,2.1,0.7,0.6,1.5,3.2,12.3,abdursh01
 2,Alex Acker,SG,23,DET,5,0,7.0,0.8,3.2,.250,0.2,1.0,.200,0.6,2.2,.273,.281,0.0,0.0,,0.2,0.8,1.0,0.8,0.2,0.0,0.8,0.8,1.8,ackeral01
 3,Malik Allen,PF,27,CHI,54,20,13.0,2.2,4.6,.490,0.0,0.0,1.000,2.2,4.6,.488,.492,0.4,0.7,.605,0.8,1.8,2.6,0.4,0.3,0.3,0.6,1.7,4.9,allenma01

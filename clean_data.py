@@ -9,7 +9,8 @@ def clean_stats(year: int, game_type: str, stats_category: str, drop_cols: list)
 
     df_dropped = df.drop(drop_cols, axis=1)
 
-    if stats_category == "players_stats":
+    if stats_category in ["players_stats", "players_advanced_stats"]:
+        df_dropped.rename(columns = {'Player-additional':'ID'}, inplace = True)
         filtered_df = df_dropped.drop_duplicates(subset='ID', keep="first")
         filtered_df.reset_index(drop=True, inplace=True)
     if stats_category == "teams_stats":
@@ -25,7 +26,7 @@ def unique_players(year: int):
     with open(f'./data/players_stats/leagues/players_stats_{year}.csv', 'r', encoding="utf-8") as file:
         df = pd.read_csv(file)
 
-    players = df["ID"].values.tolist()
+    players = df["Player-additional"].values.tolist()
     distinct_players = set(players)
 
     return distinct_players

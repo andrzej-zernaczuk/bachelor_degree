@@ -61,13 +61,43 @@ def get_players_stats(years: list, game_types: list):
                     print(f"Saving {game_type} player stats from {year}")
                     file.write(stats_csv)
 
+def get_players_advanced_stats(years: list, game_types: list):
+    """Get player advanced stats per season"""
+    for year in years:
+        for game_type in game_types:
+            if not os.path.exists(f'./data/players_advanced_stats/{game_type}/players_advanced_stats_{year}.csv'):
+                players_advanced_stats_url = f"https://www.basketball-reference.com/{game_type}/NBA_{year}_advanced.html"
+                driver.get(players_advanced_stats_url)
+
+                #in case of popup appearance, it stays hidden on site most of the time, closing it doesn't break the site
+                close_popup()
+
+                stats_table = driver.find_element(By.ID, "all_advanced_stats")
+                driver.execute_script("arguments[0].scrollIntoView();", stats_table)
+
+                share_export_menu = driver.find_element(By.CLASS_NAME, "section_heading_text").find_element(By.CSS_SELECTOR, "li.hasmore")
+                time.sleep(2)
+                actions.move_to_element(share_export_menu).perform()
+
+                csv_option = driver.find_element(By.XPATH, "//button[text()='Get table as CSV (for Excel)']")
+                time.sleep(2)
+                actions.move_to_element(csv_option).click().perform()
+
+                stats_copied = driver.find_element(By.ID, "all_advanced_stats").find_element(By.ID, "csv_advanced_stats").text
+                partition_tuple = stats_copied.partition("Rk,Player,")
+                stats_csv = partition_tuple[1] + partition_tuple[2]
+
+                with open(f'./data/players_advanced_stats/{game_type}/players_advanced_stats_{year}.csv', 'w', encoding="utf-8") as file:
+                    print(f"Saving {game_type} player advanced stats from {year}")
+                    file.write(stats_csv)
+
 def get_team_stats(years: list, game_types: list):
     """Get team stats per season"""
     for year in years:
         for game_type in game_types:
             if not os.path.exists(f'./data/teams_stats/{game_type}/teams_stats_{year}.csv'):
-                players_stats_url = f"https://www.basketball-reference.com/{game_type}/NBA_{year}.html"
-                driver.get(players_stats_url)
+                teams_stats_url = f"https://www.basketball-reference.com/{game_type}/NBA_{year}.html"
+                driver.get(teams_stats_url)
 
                 #in case of popup appearance, it stays hidden on site most of the time, closing it doesn't break the site
                 close_popup()
