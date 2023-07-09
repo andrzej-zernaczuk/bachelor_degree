@@ -17,6 +17,7 @@ driver.maximize_window()
 
 actions = ActionChains(driver)
 
+cookies_accepted = False
 def accept_cookies():
     """Accept cookies popup"""
     print("Accepting policy")
@@ -32,7 +33,11 @@ def close_popup():
 
 def get_players_stats(years: list, game_types: list):
     """Get player stats per season"""
-    accept_cookies()
+    global cookies_accepted
+
+    if cookies_accepted == False:
+        accept_cookies()
+        cookies_accepted = True
     for year in years:
         for game_type in game_types:
             if not os.path.exists(f'./data/players_stats/{game_type}/players_stats_{year}.csv'):
@@ -63,6 +68,11 @@ def get_players_stats(years: list, game_types: list):
 
 def get_players_advanced_stats(years: list, game_types: list):
     """Get player advanced stats per season"""
+    global cookies_accepted
+
+    if cookies_accepted == False:
+        accept_cookies()
+        cookies_accepted = True
     for year in years:
         for game_type in game_types:
             if not os.path.exists(f'./data/players_advanced_stats/{game_type}/players_advanced_stats_{year}.csv'):
@@ -93,6 +103,11 @@ def get_players_advanced_stats(years: list, game_types: list):
 
 def get_team_stats(years: list, game_types: list):
     """Get team stats per season"""
+    global cookies_accepted
+
+    if cookies_accepted == False:
+        accept_cookies()
+        cookies_accepted = True
     for year in years:
         for game_type in game_types:
             if not os.path.exists(f'./data/teams_stats/{game_type}/teams_stats_{year}.csv'):
