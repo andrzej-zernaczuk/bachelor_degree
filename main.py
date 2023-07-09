@@ -1,9 +1,9 @@
 from get_data import get_players_stats, get_team_stats, get_players_advanced_stats
-from clean_data import clean_stats, unique_players, consolidate_personal_awards
+from clean_data import clean_stats, unique_players, consolidate_personal_awards, consolidate_salary_cap
 import csv
 import pickle
 
-years = list(range(2001, 2023))
+years = list(range(2001, 2024))
 game_types = ["playoffs", "leagues"]
 # stats that aren't need for model
 players_columns_to_drop = ['Rk', 'Pos', 'FG', 'FGA', 'FG%', '3P',
@@ -23,10 +23,11 @@ players_stats = {}
 players_advanced_stats = {}
 teams_stats = {}
 
-# get_players_stats(years, game_types)
-# get_team_stats(years, game_types)
-# get_players_advanced_stats(years, game_types)
+get_players_stats(years, game_types)
+get_team_stats(years, game_types)
+get_players_advanced_stats(years, game_types)
 personal_awards = consolidate_personal_awards()
+salary_cap = consolidate_salary_cap()
 for year in years:
     distinct_players.extend(unique_players(year))
     players_stats[year] = {}
@@ -41,16 +42,13 @@ distinct_players = set(distinct_players)
 
 # store processed data
 personal_awards.to_csv('./data/transformed_data/personal_awards.csv', index=False, encoding='utf-8')
-
+salary_cap.to_csv('./data/transformed_data/salary_cap.csv', index=False, encoding='utf-8')
 with open('./data/transformed_data/distinct_players.csv', 'w') as dist_play:
     write = csv.writer(dist_play)
     write.writerow(distinct_players)
-
 with open('./data/transformed_data/players_stats.pickle', 'wb') as play_stats:
     pickle.dump(players_stats, play_stats)
-
 with open('./data/transformed_data/players_advanced_stats.pickle', 'wb') as play_adv_stats:
     pickle.dump(players_advanced_stats, play_adv_stats)
-
 with open('./data/transformed_data/teams_stats.pickle', 'wb') as team_stats:
     pickle.dump(teams_stats, team_stats)
