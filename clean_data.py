@@ -25,6 +25,21 @@ def clean_stats(year: int, game_type: str, stats_category: str, drop_cols: list)
         filtered_df = df_dropped[df_dropped.Team != "League Average"]
         filtered_df['Team'] = filtered_df['Team'].str.replace('*', '')
 
+        with open(f'./data/teams_stats/teams.csv', 'r', encoding="utf-8") as file:
+            dist_teams = pd.read_csv(file)
+
+        for index, row in filtered_df.iterrows():
+            # data inconsistency fix
+            if filtered_df.loc[index, 'Team'] == 'Seattle Supersonics':
+                row['Team'] = 'Seattle SuperSonics'
+            if filtered_df.loc[index, 'Team'] == 'New Orleans/Oklahoma City Hornets':
+                row['Team'] = 'New Orleans Hornets'
+
+            # change team name to id
+            filtered_df.loc[index, 'Team'] = dist_teams.query(f"team == '{row['Team']}'")["ID"].iloc[0]
+
+        filtered_df = filtered_df.set_index("Team")
+
     return filtered_df
 
 
@@ -47,7 +62,7 @@ def consolidate_personal_awards():
     def_awards = pd.read_csv("./data/league_awards/defensive_player_awards.csv")
     improv_awards = pd.read_csv("./data/league_awards/most_improved_awards.csv")
     mvp_awards = pd.read_csv("./data/league_awards/most_valuable_player_awards.csv")
-    rookie_awards = pd.read_csv("./data/league_awards/rookie_awards.csv")
+    mvp_finals_awards = pd.read_csv("./data/league_awards/most_valuable_player_finals_awards.csv")
     sixth_man_awards = pd.read_csv("./data/league_awards/sixth_man_awards.csv")
 
     # create dataframe
@@ -60,7 +75,7 @@ def consolidate_personal_awards():
     awards_conso["defensive"] = def_awards["ID"]
     awards_conso["most_improved"] = improv_awards["ID"]
     awards_conso["most_valuable"] = mvp_awards["ID"]
-    awards_conso["rookie"] = rookie_awards["ID"]
+    awards_conso["most_valuable_finals"] = mvp_finals_awards["ID"]
     awards_conso["sixth_man"] = sixth_man_awards["ID"]
 
     return awards_conso

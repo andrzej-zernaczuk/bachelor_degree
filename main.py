@@ -23,9 +23,9 @@ players_stats = {}
 players_advanced_stats = {}
 teams_stats = {}
 
-get_players_stats(years, game_types)
-get_team_stats(years, game_types)
-get_players_advanced_stats(years, game_types)
+# get_players_stats(years, game_types)
+# get_team_stats(years, game_types)
+# get_players_advanced_stats(years, game_types)
 personal_awards = consolidate_personal_awards()
 salary_cap = consolidate_salary_cap()
 for year in years:
