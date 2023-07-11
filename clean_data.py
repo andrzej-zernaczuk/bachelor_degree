@@ -57,31 +57,6 @@ def unique_players(year: int):
     return players
 
 
-def consolidate_personal_awards():
-    """Consolidate personal awards into one df"""
-
-    # read all awards
-    def_awards = pd.read_csv("./data/league_awards/defensive_player_awards.csv")
-    improv_awards = pd.read_csv("./data/league_awards/most_improved_awards.csv")
-    mvp_awards = pd.read_csv("./data/league_awards/most_valuable_player_awards.csv")
-    mvp_finals_awards = pd.read_csv("./data/league_awards/most_valuable_player_finals_awards.csv")
-    sixth_man_awards = pd.read_csv("./data/league_awards/sixth_man_awards.csv")
-
-    # create dataframe
-    df_columns = ["year", "defensive", "most_improved", "most_valuable", "rookie", "sixth_man"]
-    awards_conso = pd.DataFrame(columns=df_columns)
-    awards_conso["year"] = def_awards["Season"]
-    awards_conso['year'] = awards_conso['year'].apply(lambda x: int("20" + str(x)[-2:]))
-
-    # add awards to dataframe by year
-    awards_conso["defensive"] = def_awards["ID"]
-    awards_conso["most_improved"] = improv_awards["ID"]
-    awards_conso["most_valuable"] = mvp_awards["ID"]
-    awards_conso["most_valuable_finals"] = mvp_finals_awards["ID"]
-    awards_conso["sixth_man"] = sixth_man_awards["ID"]
-
-    return awards_conso
-
 def consolidate_salary_cap():
     """Consolidate salary cap"""
 
@@ -94,3 +69,109 @@ def consolidate_salary_cap():
     salary_cap['salary_cap'] = salary_cap['salary_cap'].apply(lambda x: int(str(x)[1:].replace(",", "")))
 
     return salary_cap
+
+
+def consolidate_personal_awards():
+    """Consolidate personal awards into one df"""
+
+    # read all awards
+    def_awards = pd.read_csv("./data/league_awards/defensive_player_awards.csv")
+    improv_awards = pd.read_csv("./data/league_awards/most_improved_awards.csv")
+    mvp_awards = pd.read_csv("./data/league_awards/most_valuable_player_awards.csv")
+    mvp_finals_awards = pd.read_csv("./data/league_awards/most_valuable_player_finals_awards.csv")
+    sixth_man_awards = pd.read_csv("./data/league_awards/sixth_man_awards.csv")
+    all_league = pd.read_csv("./data/league_awards/all_league_awards.csv")
+    all_def = pd.read_csv("./data/league_awards/all_defensive_awards.csv")
+
+    all_league_transformed = transform_all_league_awards(all_league)
+    all_def_transformed = transform_all_def_awards(all_def)
+
+    # create dataframe
+    df_columns = ["year", "defensive", "most_improved", "most_valuable", "rookie", "sixth_man"]
+    awards_conso = pd.DataFrame(columns=df_columns)
+    awards_conso["year"] = def_awards["Season"]
+    # Change Season notation to simple Years
+    awards_conso['year'] = awards_conso['year'].apply(lambda x: int("20" + str(x)[-2:]))
+
+    # add awards to dataframe by year
+    awards_conso["defensive"] = def_awards["ID"]
+    awards_conso["most_improved"] = improv_awards["ID"]
+    awards_conso["most_valuable"] = mvp_awards["ID"]
+    awards_conso["most_valuable_finals"] = mvp_finals_awards["ID"]
+    awards_conso["sixth_man"] = sixth_man_awards["ID"]
+
+    awards_conso = pd.concat([awards_conso, all_league_transformed], axis=1)
+    awards_conso = pd.concat([awards_conso, all_def_transformed], axis=1)
+
+    return awards_conso
+
+def transform_all_def_awards(df: pd.DataFrame):
+    all_def = df
+
+    # In case of draw split players into 2 separate columns
+    for index, row in all_def.iterrows():
+        if "(T)" in row["Player5"]:
+            val = str(row["Player5"]).replace(" (T)", "")
+            names = val.split(" ")
+            all_def.loc[index, 'Player5'] = " ".join(names[:2])
+            all_def.loc[index, 'Player6'] = " ".join(names[2:])
+
+    # Change Season notation to simple Years
+    all_def['Season'] = all_def['Season'].apply(lambda x: int("20" + str(x)[-2:]))
+
+    # Create transformed df to hold data
+    all_def_rows = ["Year", "all_def_1", "all_def_2", "all_def_3", "all_def_4", "all_def_5", "all_def_6", "all_def_7", "all_def_8", "all_def_9", "all_def_10", "all_def_11"]
+    all_def_transformed = pd.DataFrame(columns=all_def_rows)
+    all_def_transformed["Year"] = list(reversed(range(2001, 2024)))
+
+    # Flatten all_def into new df
+    for index, row in all_def_transformed.iterrows():
+        for i in range(1,12):
+            if i <= 5:
+                all_def_transformed.loc[index, f'all_def_{i}'] = all_def.query(f"Season == {row['Year']} and Tm == '1st'")[f"Player{i}"].iloc[0]
+            elif 5 < i <= 10:
+                all_def_transformed.loc[index, f'all_def_{i}'] = all_def.query(f"Season == {row['Year']} and Tm == '2nd'")[f"Player{i - 5}"].iloc[0]
+            else:
+                if pd.isna(all_def.query(f"Season == {row['Year']} and Tm == '1st'")[f"Player{ i- 5}"].iloc[0]):
+                    all_def_transformed.loc[index, f'all_def_{i}'] = all_def.query(f"Season == {row['Year']} and Tm == '2nd'")[f"Player{6}"].iloc[0]
+                else:
+                    all_def_transformed.loc[index, f'all_def_{i}'] = all_def.query(f"Season == {row['Year']} and Tm == '1st'")[f"Player{6}"].iloc[0]
+
+    # Not needed in final df
+    all_def_transformed = all_def_transformed.drop(columns=['Year'])
+
+    return all_def_transformed
+
+
+def transform_all_league_awards(df: pd.DataFrame):
+    all_league = df
+
+    # Remove single letter and whitespace at end of columns
+    columns_to_edit = ["Player1", "Player2", "Player3", "Player4", "Player5"]
+    for column in columns_to_edit:
+        all_league[f'{column}'] = all_league[f'{column}'].apply(lambda x: str(x)[:-2])
+
+    # Change Season notation to simple Years
+    all_league['Season'] = all_league['Season'].apply(lambda x: int("20" + str(x)[-2:]))
+
+    # Create transformed df to hold data
+    all_league_rows = ["Year", "all_league_1", "all_league_2", "all_league_3", "all_league_4", "all_league_5",
+                   "all_league_6", "all_league_7", "all_league_8", "all_league_9", "all_league_10",
+                   "all_league_11", "all_league_12", "all_league_13", "all_league_14", "all_league_15"]
+    all_league_transformed = pd.DataFrame(columns=all_league_rows)
+    all_league_transformed["Year"] = list(reversed(range(2001, 2024)))
+
+    # Flatten all_league into new df
+    for index, row in all_league_transformed.iterrows():
+        for i in range(1,16):
+            if i <= 5:
+                all_league_transformed.loc[index, f'all_league_{i}'] = all_league.query(f"Season == {row['Year']} and Tm == '1st'")[f"Player{i}"].iloc[0]
+            elif 5 < i <= 10:
+                all_league_transformed.loc[index, f'all_league_{i}'] = all_league.query(f"Season == {row['Year']} and Tm == '2nd'")[f"Player{i - 5}"].iloc[0]
+            elif 10 < i <= 15:
+                all_league_transformed.loc[index, f'all_league_{i}'] = all_league.query(f"Season == {row['Year']} and Tm == '3rd'")[f"Player{i - 10}"].iloc[0]
+
+    # Not needed in final df
+    all_league_transformed = all_league_transformed.drop(columns=['Year'])
+
+    return all_league_transformed
