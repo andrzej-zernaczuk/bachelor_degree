@@ -1,7 +1,7 @@
 from get_data import get_players_stats, get_team_stats, get_players_advanced_stats
 from clean_data import clean_stats, unique_players, consolidate_personal_awards, consolidate_salary_cap
-import csv
 import pickle
+import pandas as pd
 
 years = list(range(2001, 2024))
 game_types = ["playoffs", "leagues"]
@@ -18,7 +18,7 @@ teams_columns_to_drop = ['Rk', 'FG', 'FGA', 'FG%', '3P',
                     '3PA', '3P%', '2P', '2PA', '2P%',
                     'FT', 'FTA', 'FT%', 'ORB', 'DRB', 'TRB',
                     'AST', 'STL', 'BLK', 'TOV', 'PF', 'PTS']
-distinct_players = []
+distinct_players = pd.DataFrame(columns=["ID", "player"])
 players_stats = {}
 players_advanced_stats = {}
 teams_stats = {}
@@ -29,7 +29,11 @@ teams_stats = {}
 personal_awards = consolidate_personal_awards()
 salary_cap = consolidate_salary_cap()
 for year in years:
-    distinct_players.extend(unique_players(year))
+    distinct_players = (
+        pd.concat([distinct_players, unique_players(year)], ignore_index=True)
+        .drop_duplicates(subset='ID', keep="first")
+        .reset_index(drop=True)
+    )
     players_stats[year] = {}
     players_advanced_stats[year] = {}
     teams_stats[year] = {}
@@ -38,14 +42,10 @@ for year in years:
         players_advanced_stats[year][game_type] = clean_stats(year, game_type, "players_advanced_stats", players_advanced_columns_to_drop)
         teams_stats[year][game_type] = clean_stats(year, game_type, "teams_stats", teams_columns_to_drop)
 
-distinct_players = set(distinct_players)
-
 # store processed data
 personal_awards.to_csv('./data/transformed_data/personal_awards.csv', index=False, encoding='utf-8')
 salary_cap.to_csv('./data/transformed_data/salary_cap.csv', index=False, encoding='utf-8')
-with open('./data/transformed_data/distinct_players.csv', 'w') as dist_play:
-    write = csv.writer(dist_play)
-    write.writerow(distinct_players)
+distinct_players.to_csv('./data/transformed_data/distinct_players.csv', encoding='utf-8')
 with open('./data/transformed_data/players_stats.pickle', 'wb') as play_stats:
     pickle.dump(players_stats, play_stats)
 with open('./data/transformed_data/players_advanced_stats.pickle', 'wb') as play_adv_stats:

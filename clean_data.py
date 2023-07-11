@@ -49,10 +49,12 @@ def unique_players(year: int):
     with open(f'./data/players_stats/leagues/players_stats_{year}.csv', 'r', encoding="utf-8") as file:
         df = pd.read_csv(file)
 
-    players = df["Player-additional"].values.tolist()
-    distinct_players = set(players)
+    players = pd.DataFrame(columns=["ID", "player"])
 
-    return distinct_players
+    players["ID"] = df["Player-additional"].values.tolist()
+    players["player"] = df["Player"].values.tolist()
+
+    return players
 
 
 def consolidate_personal_awards():
