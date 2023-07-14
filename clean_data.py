@@ -104,7 +104,7 @@ def consolidate_personal_awards():
     all_def_transformed = transform_all_def_awards(all_def)
 
     # create dataframe
-    df_columns = ["year", "defensive", "most_improved", "most_valuable", "rookie", "sixth_man"]
+    df_columns = ["year", "defensive", "most_improved", "most_valuable", "most_valuable_finals", "sixth_man"]
     awards_conso = pd.DataFrame(columns=df_columns)
     awards_conso["year"] = def_awards["Season"]
     # Change Season notation to simple Years
