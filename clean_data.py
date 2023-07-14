@@ -10,17 +10,36 @@ def clean_stats(year: int, game_type: str, stats_category: str, drop_cols: list)
     df_dropped = df.drop(drop_cols, axis=1)
 
     if stats_category in ["players_stats", "players_advanced_stats"]:
-        df_dropped.rename(columns = {'Player-additional':'ID'}, inplace = True)
+        df_dropped.rename(columns = {'Player-additional': 'ID'}, inplace = True)
         # find duplicates
         duplicates_df = df_dropped[df_dropped.duplicated(['ID'], keep=False)]
         # store the last team
         dropped_duplicates_df = duplicates_df.drop_duplicates(subset='ID', keep="last")
         # drop duplicates
         filtered_df = df_dropped.drop_duplicates(subset='ID', keep="first")
-        filtered_df = filtered_df.set_index("ID")
         # swap TOT for last team ID
         for index, row in dropped_duplicates_df.iterrows():
-            filtered_df.loc[[f"{row['ID']}"], ['Tm']] = dropped_duplicates_df.query(f"ID == '{row['ID']}'")["Tm"].iloc[0]
+            idx = filtered_df.query(f"ID == '{dropped_duplicates_df.loc[index, 'ID']}'").index
+            filtered_df.loc[idx, 'Tm'] = dropped_duplicates_df.query(f"ID == '{row['ID']}'")["Tm"].iloc[0]
+
+        filtered_df = filtered_df.dropna(subset = ['ID'])
+
+        # change legacy names of teams to current ones
+        if 'NJN' in filtered_df['Tm'].values:
+            filtered_df['Tm'] = filtered_df['Tm'].replace('NJN', 'BRK')
+        if 'CHH' in filtered_df['Tm'].values:
+            filtered_df['Tm'] = filtered_df['Tm'].replace('CHH', 'CHO')
+        if 'CHA' in filtered_df['Tm'].values:
+            filtered_df['Tm'] = filtered_df['Tm'].replace('CHA', 'CHO')
+        if 'NOH' in filtered_df['Tm'].values:
+            filtered_df['Tm'] = filtered_df['Tm'].replace('NOH', 'NOP')
+        if 'NOK' in filtered_df['Tm'].values:
+            filtered_df['Tm'] = filtered_df['Tm'].replace('NOK', 'NOP')
+        if 'SEA' in filtered_df['Tm'].values:
+            filtered_df['Tm'] = filtered_df['Tm'].replace('SEA', 'OKC')
+        if 'VAN' in filtered_df['Tm'].values:
+            filtered_df['Tm'] = filtered_df['Tm'].replace('VAN', 'MEM')
+
     if stats_category == "teams_stats":
         filtered_df = df_dropped[df_dropped.Team != "League Average"]
         filtered_df['Team'] = filtered_df['Team'].str.replace('*', '')
@@ -37,8 +56,6 @@ def clean_stats(year: int, game_type: str, stats_category: str, drop_cols: list)
 
             # change team name to id
             filtered_df.loc[index, 'Team'] = dist_teams.query(f"team == '{row['Team']}'")["ID"].iloc[0]
-
-        filtered_df = filtered_df.set_index("Team")
 
     return filtered_df
 
