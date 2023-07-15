@@ -22,8 +22,6 @@ def clean_stats(year: int, game_type: str, stats_category: str, drop_cols: list)
             idx = filtered_df.query(f"ID == '{dropped_duplicates_df.loc[index, 'ID']}'").index
             filtered_df.loc[idx, 'Tm'] = dropped_duplicates_df.query(f"ID == '{row['ID']}'")["Tm"].iloc[0]
 
-        filtered_df = filtered_df.dropna(subset = ['ID'])
-
         # change legacy names of teams to current ones
         if 'NJN' in filtered_df['Tm'].values:
             filtered_df['Tm'] = filtered_df['Tm'].replace('NJN', 'BRK')
@@ -70,6 +68,7 @@ def unique_players(year: int):
 
     players["ID"] = df["Player-additional"].values.tolist()
     players["player"] = df["Player"].values.tolist()
+    players["player"] = players["player"].str.replace("*","")
 
     return players
 
@@ -123,6 +122,7 @@ def consolidate_personal_awards():
     return awards_conso
 
 def transform_all_def_awards(df: pd.DataFrame):
+    """Transform all deffensive awards into DF ready to be concatenated to personal awards"""
     all_def = df
 
     # In case of draw split players into 2 separate columns
@@ -161,6 +161,7 @@ def transform_all_def_awards(df: pd.DataFrame):
 
 
 def transform_all_league_awards(df: pd.DataFrame):
+    """Transform all league awards into DF ready to be concatenated to personal awards"""
     all_league = df
 
     # Remove single letter and whitespace at end of columns
@@ -192,3 +193,22 @@ def transform_all_league_awards(df: pd.DataFrame):
     all_league_transformed = all_league_transformed.drop(columns=['Year'])
 
     return all_league_transformed
+
+
+def clean_personal_awards(pers_awards, dist_players: pd.DataFrame):
+    """Change player names to IDs"""
+
+    distinct_players = dist_players
+
+    player_names = list(pd.unique(pers_awards[["all_league_1", "all_league_2", "all_league_3", "all_league_4", "all_league_5", "all_league_6",
+                                                    "all_league_7", "all_league_8", "all_league_9", "all_league_10", "all_league_11", "all_league_12",
+                                                    "all_league_13", "all_league_14", "all_league_15", "all_def_1", "all_def_2", "all_def_3", "all_def_4",
+                                                    "all_def_5", "all_def_6", "all_def_7", "all_def_8", "all_def_9", "all_def_10", "all_def_11"]].values.ravel()))
+
+    player_names_cleaned = [x for x in player_names if x == x]
+
+    for name in player_names_cleaned:
+        name_id = distinct_players.query(f'player == "{name}"')['ID'].iloc[0]
+        pers_awards = pers_awards.replace(f"{name}", f"{name_id}")
+
+    return pers_awards
