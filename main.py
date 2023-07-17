@@ -1,5 +1,5 @@
 from get_data import get_players_stats, get_team_stats, get_players_advanced_stats
-from clean_data import clean_stats, unique_players, consolidate_personal_awards, consolidate_salary_cap, clean_personal_awards
+from clean_data import clean_stats, unique_players, consolidate_personal_awards, consolidate_salary_cap, clean_personal_awards, clean_playoffs
 import pickle
 import pandas as pd
 
@@ -22,6 +22,7 @@ distinct_players = pd.DataFrame(columns=["ID", "player"])
 players_stats = {}
 players_advanced_stats = {}
 teams_stats = {}
+playoffs = {}
 
 # get_players_stats(years, game_types)
 # get_team_stats(years, game_types)
@@ -37,10 +38,12 @@ for year in years:
     players_stats[year] = {}
     players_advanced_stats[year] = {}
     teams_stats[year] = {}
+    playoffs[year] = {}
     for game_type in game_types:
         players_stats[year][game_type] = clean_stats(year, game_type, "players_stats", players_columns_to_drop)
         players_advanced_stats[year][game_type] = clean_stats(year, game_type, "players_advanced_stats", players_advanced_columns_to_drop)
         teams_stats[year][game_type] = clean_stats(year, game_type, "teams_stats", teams_columns_to_drop)
+    playoffs[year] = clean_playoffs(year)
 
 personal_awards = clean_personal_awards(personal_awards_raw, distinct_players)
 
@@ -54,3 +57,5 @@ with open('./data/transformed_data/players_advanced_stats.pickle', 'wb') as play
     pickle.dump(players_advanced_stats, play_adv_stats)
 with open('./data/transformed_data/teams_stats.pickle', 'wb') as team_stats:
     pickle.dump(teams_stats, team_stats)
+with open('./data/transformed_data/playoffs.pickle', 'wb') as playoff:
+    pickle.dump(playoffs, playoff)

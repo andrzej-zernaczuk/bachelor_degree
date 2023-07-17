@@ -9,6 +9,10 @@ def clean_stats(year: int, game_type: str, stats_category: str, drop_cols: list)
 
     df_dropped = df.drop(drop_cols, axis=1)
 
+    if stats_category == "players_advanced_stats":
+        # drops 2 unnamed columns
+        df_dropped = df_dropped.loc[:, ~df_dropped.columns.str.contains('^Unnamed')]
+
     if stats_category in ["players_stats", "players_advanced_stats"]:
         df_dropped.rename(columns = {'Player-additional': 'ID'}, inplace = True)
         # find duplicates
@@ -56,6 +60,22 @@ def clean_stats(year: int, game_type: str, stats_category: str, drop_cols: list)
             filtered_df.loc[index, 'Team'] = dist_teams.query(f"team == '{row['Team']}'")["ID"].iloc[0]
 
     return filtered_df
+
+
+def clean_playoffs(year: int):
+    """Change team name to ID"""
+    with open(f'./data/playoffs_tree/playoffs_{year}.csv', 'r', encoding="utf-8") as file:
+        playoffs = pd.read_csv(file)
+
+    with open(f'./data/teams_stats/teams.csv', 'r', encoding="utf-8") as file:
+        dist_teams = pd.read_csv(file)
+
+    for index, row in playoffs.iterrows():
+        # change team name to id
+        playoffs.loc[index, 'winner'] = dist_teams.query(f"team == '{row['winner']}'")["ID"].iloc[0]
+        playoffs.loc[index, 'loser'] = dist_teams.query(f"team == '{row['loser']}'")["ID"].iloc[0]
+
+    return playoffs
 
 
 def unique_players(year: int):
