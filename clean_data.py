@@ -20,7 +20,7 @@ def clean_stats(year: int, game_type: str, stats_category: str, drop_cols: list)
         # store the last team
         dropped_duplicates_df = duplicates_df.drop_duplicates(subset='ID', keep="last")
         # drop duplicates
-        filtered_df = df_dropped.drop_duplicates(subset='ID', keep="first")
+        filtered_df = df_dropped.drop_duplicates(subset='ID', keep="first").copy()
         # swap TOT for last team ID
         for index, row in dropped_duplicates_df.iterrows():
             idx = filtered_df.query(f"ID == '{dropped_duplicates_df.loc[index, 'ID']}'").index
@@ -43,7 +43,7 @@ def clean_stats(year: int, game_type: str, stats_category: str, drop_cols: list)
             filtered_df['Tm'] = filtered_df['Tm'].replace('VAN', 'MEM')
 
     if stats_category == "teams_stats":
-        filtered_df = df_dropped[df_dropped.Team != "League Average"]
+        filtered_df = df_dropped[df_dropped.Team != "League Average"].copy()
         filtered_df['Team'] = filtered_df['Team'].str.replace('*', '')
 
         with open(f'./data/raw_data/teams_stats/teams.csv', 'r', encoding="utf-8") as file:

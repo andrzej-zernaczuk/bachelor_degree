@@ -10,14 +10,12 @@ start = datetime.now()
 years = list(range(2001, 2024))
 game_types = ["playoffs", "leagues"]
 
-
 # objects to hold stats
 players_stats = {}
 players_advanced_stats = {}
 teams_stats = {}
 playoffs = {}
 distinct_players = pd.DataFrame(columns=["ID", "player"])
-
 
 # stats that aren't need for model
 players_columns_to_drop = ['Rk', 'Pos', 'FG', 'FGA', 'FG%', '3P',
@@ -35,6 +33,7 @@ teams_columns_to_drop = ['Rk', 'FG', 'FGA', 'FG%', '3P',
 
 scrap_start = datetime.now()
 print(f"########## Started data scrapping at {scrap_start} ##########")
+
 # scrap necessary data
 # get_players_stats(years, game_types)
 # get_team_stats(years, game_types)
@@ -45,11 +44,11 @@ print(f"########## Finished data scrapping after {((scrap_finish - scrap_start).
 
 cleanup_start = datetime.now()
 print(f"########## Started data cleanup at: {cleanup_start} ##########")
+
 # clean data
 personal_awards_raw = consolidate_personal_awards()
 salary_cap = consolidate_salary_cap()
 for year in years:
-    print(f"########## Cleanup of year {year} started at {datetime.now()} ##########")
     distinct_players = (
         pd.concat([distinct_players, unique_players(year)], ignore_index=True)
         .drop_duplicates(subset='ID', keep="first")
@@ -66,8 +65,8 @@ for year in years:
         teams_stats[year][game_type] = clean_stats(year, game_type, "teams_stats", teams_columns_to_drop)
 
 personal_awards = clean_personal_awards(personal_awards_raw, distinct_players)
-cleanup_finish = datetime.now()
 
+cleanup_finish = datetime.now()
 print(f"########## Finished data cleanup after {((cleanup_finish - cleanup_start).total_seconds())} seconds ##########")
 
 # store processed data in case of failure or for further data exploring
@@ -87,6 +86,7 @@ print(f"########## Finished storing data at: {datetime.now()} ##########")
 
 transform_start = datetime.now()
 print(f"########## Started data transformation at: {transform_start} ##########")
+
 # transform data
 stats = {}
 stats_columns = ["ID", "age", "games_played_perc", "games_started_perc", "avg_minutes_played", "WS48", "team_successes",
