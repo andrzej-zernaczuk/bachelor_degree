@@ -1,6 +1,6 @@
 from get_data import get_players_stats, get_team_stats, get_players_advanced_stats
-from clean_data import clean_stats, unique_players, consolidate_personal_awards, consolidate_salary_cap, clean_personal_awards, clean_playoffs
-from transform_data import games_played_perc, games_started_perc, average_minutes_played, winshares_per48, player_age, team_success, team_scores
+from clean_data import clean_stats, unique_players, consolidate_personal_awards, consolidate_salary_cap, clean_personal_awards, clean_playoffs, clean_salaries
+from transform_data import games_played_perc, games_started_perc, average_minutes_played, winshares_per48, player_age, team_success, team_scores, salary_as_perc_of_cap
 import pickle
 import pandas as pd
 
@@ -13,6 +13,7 @@ game_types = ["playoffs", "leagues"]
 # objects to hold stats
 players_stats = {}
 players_advanced_stats = {}
+players_salaries = {}
 teams_stats = {}
 playoffs = {}
 distinct_players = pd.DataFrame(columns=["ID", "player"])
@@ -56,6 +57,8 @@ for year in years:
     )
     players_stats[year] = {}
     players_advanced_stats[year] = {}
+    players_salaries[year] = {}
+    players_salaries[year] = clean_salaries(year, distinct_players)
     teams_stats[year] = {}
     playoffs[year] = {}
     playoffs[year] = clean_playoffs(year)
@@ -77,6 +80,8 @@ with open('./data/cleaned_data/players_stats.pickle', 'wb') as play_stats:
     pickle.dump(players_stats, play_stats)
 with open('./data/cleaned_data/players_advanced_stats.pickle', 'wb') as play_adv_stats:
     pickle.dump(players_advanced_stats, play_adv_stats)
+with open('./data/cleaned_data/players_salaries.pickle', 'wb') as play_salaries:
+    pickle.dump(players_salaries, play_salaries)
 with open('./data/cleaned_data/teams_stats.pickle', 'wb') as team_stats:
     pickle.dump(teams_stats, team_stats)
 with open('./data/cleaned_data/playoffs.pickle', 'wb') as playoff:
@@ -89,7 +94,7 @@ print(f"########## Started data transformation at: {transform_start} ##########"
 
 # transform data
 stats = {}
-stats_columns = ["ID", "age", "games_played_perc", "games_started_perc", "avg_minutes_played", "WS48", "team_successes",
+stats_columns = ["ID", "salary_perc", "age", "games_played_perc", "games_started_perc", "avg_minutes_played", "WS48", "team_successes",
               "defensive", "most_improved", "most_valuable", "most_valuable_finals", "sixth_man", "all_league", "all_def"]
 playoffs_scores = {}
 awards_columns = list(personal_awards.columns)
@@ -110,6 +115,7 @@ for year in years:
         stats[year].loc[[f'{player_id}'], ['team_successes']] = team_success(player_id, players_stats[year], playoffs_scores[year])
         stats[year].loc[[f'{player_id}'], ['WS48']] = winshares_per48(player_id, game_types, players_stats[year], players_advanced_stats[year])
         stats[year].loc[[f'{player_id}'], ['age']] = player_age(player_id, players_stats[year])
+        stats[year].loc[[f'{player_id}'], ['salary_perc']] = salary_as_perc_of_cap(player_id, players_salaries[year], salary_cap, year)
     for column in awards_columns:
         player = personal_awards.query(f"year == {year}")[f"{column}"].iloc[0]
         if not pd.isna(player):

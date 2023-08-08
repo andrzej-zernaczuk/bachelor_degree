@@ -1,4 +1,5 @@
 import pandas as pd
+from unidecode import unidecode
 
 
 def clean_stats(year: int, game_type: str, stats_category: str, drop_cols: list):
@@ -232,3 +233,27 @@ def clean_personal_awards(pers_awards, dist_players: pd.DataFrame):
         pers_awards = pers_awards.replace(f"{name}", f"{name_id}")
 
     return pers_awards
+
+
+def clean_salaries(year, dist_players:pd.DataFrame):
+
+    distinct_players = dist_players
+
+    with open(f'./data/raw_data/players_salaries/players_salaries_{year}.csv', 'r', encoding="ISO-8859-1 ") as file:
+        salaries = pd.read_csv(file, delimiter=';')
+
+    salaries.rename(columns = {'PLAYER': 'ID', f'{year-1}/{str(year)[2:]}': 'salary'}, inplace = True)
+    salaries['salary'] = salaries['salary'].apply(lambda x: int(str(x)[1:].replace(",", "")))
+
+        # get rid of accents from distinct players
+    distinct_players_not_accented = distinct_players.copy()
+    distinct_players_not_accented['player'] = distinct_players['player'].apply(lambda x: unidecode(x))
+
+    for index, row in salaries.iterrows():
+        try:
+            row_id = row['ID']
+            salaries.loc[index, 'ID'] = distinct_players_not_accented.query(f'player == "{row_id}"')["ID"].iloc[0]
+        except:
+            pass
+
+    return salaries

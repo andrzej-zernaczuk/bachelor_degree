@@ -140,3 +140,19 @@ def team_success(player_id: str, players_stats: pd.DataFrame, playoffs_scores: p
     success = playoffs_scores.query(f"ID == '{player_team}'")["score"].iloc[0]
 
     return success
+
+
+def salary_as_perc_of_cap(player_id: str, players_salaries: pd.DataFrame, salary_cap: pd.DataFrame, year: int):
+    """Returns player earnigns as percent of salary cap"""
+
+    try:
+        salary = int(players_salaries.query(f"ID == '{player_id}'")["salary"].iloc[0])
+        salary_cap = int(salary_cap.query(f"year == {year}")["salary_cap"].iloc[0])
+
+        salary_perc = round(salary / salary_cap, 2)
+    except:
+        salary_perc = 0
+        print(player_id)
+
+    return salary_perc
+
