@@ -2,6 +2,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver import ActionChains
 from selenium import webdriver
+import pandas as pd
 import time
 import os
 
@@ -137,3 +138,38 @@ def get_team_stats(years: list, game_types: list):
                 with open(f'./data/raw_data/teams_stats/{game_type}/teams_stats_{year}.csv', 'w', encoding="utf-8") as file:
                     print(f"Saving {game_type} teams stats from {year}")
                     file.write(stats_csv)
+
+
+def get_rookies_contracts(years: list):
+    """Get info if players is a rookie"""
+
+    site_url = "https://www.spotrac.com"
+    driver.get(site_url)
+
+    driver.switch_to.frame('gdpr-consent-notice')
+    driver.find_element(By.XPATH, "//button[@id='save']").click()
+
+    driver.switch_to.default_content()
+    newsletter_button = driver.find_element(By.ID, "PopupSignupForm_0").find_element(By.CLASS_NAME, "mc-closeModal")
+    driver.execute_script("arguments[0].click()", newsletter_button)
+
+    for year in years:
+        if not os.path.exists(f'./data/raw_data/rookies/rookies_{year}.csv'):
+
+            rookies = pd.DataFrame(columns=["player", "debut_season", "contract_length"])
+
+            rookies_url = f"https://www.spotrac.com/nba/contracts/sort-value/type-entry-level/all-time/start-{year-1}/limit-2000/"
+            driver.get(rookies_url)
+
+            stats_table = driver.find_element(By.CLASS_NAME, "teams").find_element(By.TAG_NAME, "tbody")
+            # driver.execute_script("arguments[0].scrollIntoView();", stats_table)
+
+            rows = stats_table.find_elements(By.TAG_NAME, "tr")
+            for row in rows:
+                name = row.find_elements(By.TAG_NAME, "td")[1].find_element(By.CLASS_NAME, "team-name").text
+                contract = row.find_elements(By.TAG_NAME, "td")[3].text
+
+                new_df_row = [name, year, contract]
+                rookies.loc[len(rookies)] = new_df_row
+
+            rookies.to_csv(f'./data/raw_data/rookies/rookies_{year}.csv', index=False, encoding='utf-8')

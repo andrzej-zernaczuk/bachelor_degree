@@ -1,4 +1,4 @@
-from get_data import get_players_stats, get_team_stats, get_players_advanced_stats
+from get_data import get_players_stats, get_team_stats, get_players_advanced_stats, get_rookies_contracts
 from clean_data import clean_stats, unique_players, consolidate_personal_awards, consolidate_salary_cap, clean_personal_awards, clean_playoffs, clean_salaries
 from transform_data import games_played_perc, games_started_perc, average_minutes_played, winshares_per48, player_age, team_success, team_scores, salary_as_perc_of_cap
 import pickle
@@ -39,6 +39,7 @@ print(f"########## Started data scrapping at {scrap_start} ##########")
 # get_players_stats(years, game_types)
 # get_team_stats(years, game_types)
 # get_players_advanced_stats(years, game_types)
+# get_rookies_contracts(years)
 
 scrap_finish = datetime.now()
 print(f"########## Finished data scrapping after {((scrap_finish - scrap_start).total_seconds())} seconds ##########")
