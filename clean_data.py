@@ -235,25 +235,61 @@ def clean_personal_awards(pers_awards, dist_players: pd.DataFrame):
     return pers_awards
 
 
-def clean_salaries(year, dist_players:pd.DataFrame):
+def clean_salaries(year, dist_players: pd.DataFrame):
+    """Standarize names and then try to convert them to IDs"""
 
-    distinct_players = dist_players
+    distinct_players_not_accented = dist_players.copy()
+    distinct_players_not_accented['player'] = distinct_players_not_accented['player'].apply(lambda x: unidecode(x))
+    distinct_players_not_accented['player'] = distinct_players_not_accented['player'].apply(lambda x: x.lower())
+    distinct_players_not_accented['player'] = distinct_players_not_accented['player'].apply(lambda x: x.replace(".", ""))
+    distinct_players_not_accented['player'] = distinct_players_not_accented['player'].apply(lambda x: x.replace("'", ""))
 
-    with open(f'./data/raw_data/players_salaries/players_salaries_{year}.csv', 'r', encoding="ISO-8859-1 ") as file:
-        salaries = pd.read_csv(file, delimiter=';')
+    with open(f'./data/raw_data/players_salaries/players_salaries_{year}.csv', 'r', encoding="UTF-8") as file:
+        players_salaries = pd.read_csv(file, delimiter=';')
 
-    salaries.rename(columns = {'PLAYER': 'ID', f'{year-1}/{str(year)[2:]}': 'salary'}, inplace = True)
-    salaries['salary'] = salaries['salary'].apply(lambda x: int(str(x)[1:].replace(",", "")))
+    players_salaries.rename(columns = {'PLAYER': 'ID', f'{year-1}/{str(year)[2:]}': 'salary'}, inplace = True)
+    players_salaries['salary'] = players_salaries['salary'].apply(lambda x: int(str(x)[1:].replace(",", "")))
+    players_salaries['ID'] = players_salaries['ID'].apply(lambda x: unidecode(x))
+    players_salaries['ID'] = players_salaries['ID'].apply(lambda x: x.lower())
+    players_salaries['ID'] = players_salaries['ID'].apply(lambda x: x.replace(".", ""))
+    players_salaries['ID'] = players_salaries['ID'].apply(lambda x: x.replace("'", ""))
+    players_salaries
 
-        # get rid of accents from distinct players
-    distinct_players_not_accented = distinct_players.copy()
-    distinct_players_not_accented['player'] = distinct_players['player'].apply(lambda x: unidecode(x))
-
-    for index, row in salaries.iterrows():
+    for index, row in players_salaries.iterrows():
+        row_id = row['ID']
         try:
-            row_id = row['ID']
-            salaries.loc[index, 'ID'] = distinct_players_not_accented.query(f'player == "{row_id}"')["ID"].iloc[0]
+            players_salaries.loc[index, 'ID'] = distinct_players_not_accented.query(f'player == "{row_id}"')["ID"].iloc[0]
         except:
             pass
 
-    return salaries
+    for index, row in players_salaries.iterrows():
+        row_id = row['ID']
+        try:
+            players_salaries.loc[index, 'ID'] = distinct_players_not_accented.query(f'player == "{row_id}"')["ID"].iloc[0]
+        except:
+            if row_id[-3:] == ' jr':
+                new_row_id = row_id[:-3]
+                try:
+                    player = distinct_players_not_accented.query(f'player == "{new_row_id}"')["ID"].iloc[0]
+                except:
+                    player = ''
+            elif row_id[-3:] == ' sr':
+                new_row_id = row_id[:-3]
+                try:
+                    player = distinct_players_not_accented.query(f'player == "{new_row_id}"')["ID"].iloc[0]
+                except:
+                    player = ''
+            else:
+                try:
+                    try:
+                        new_row_id = str(row_id) + ' sr'
+                        player = distinct_players_not_accented.query(f'player == "{new_row_id}"')["ID"].iloc[0]
+                    except:
+                        new_row_id = str(row_id) + ' jr'
+                        player = distinct_players_not_accented.query(f'player == "{new_row_id}"')["ID"].iloc[0]
+                except:
+                    player = ''
+            if len(player) > 0:
+                players_salaries.loc[index, 'ID'] = player
+
+    return players_salaries

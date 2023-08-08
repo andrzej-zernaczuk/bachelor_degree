@@ -152,7 +152,6 @@ def salary_as_perc_of_cap(player_id: str, players_salaries: pd.DataFrame, salary
         salary_perc = round(salary / salary_cap, 2)
     except:
         salary_perc = 0
-        print(player_id)
 
     return salary_perc
 
