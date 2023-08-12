@@ -162,11 +162,11 @@ def contract_status(players_contracts: pd.DataFrame, stats):
 
     for index, row in players_contracts.iterrows():
         player_id = players_contracts.loc[index, 'player']
-        contract_start = players_contracts.loc[index, "season"]
+        previous_contract_end = players_contracts.loc[index, "season"] - 1
         contract_end = players_contracts.loc[index, "season"] + players_contracts.loc[index, "contract_length"]
-        contract_seasons = list(range(contract_start, contract_end))
+        contract_seasons = list(range(previous_contract_end, contract_end))
         for con_season in contract_seasons:
-            if con_season != contract_seasons[-1]:
+            if con_season != contract_seasons[0] and con_season != contract_seasons[-1]:
                 try:
                     stats[con_season].loc[[f'{player_id}'], ['last_year_of_contract']] = False
                 except:
