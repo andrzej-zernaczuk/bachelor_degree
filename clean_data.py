@@ -260,13 +260,6 @@ def clean_salaries(year, dist_players: pd.DataFrame):
         try:
             players_salaries.loc[index, 'ID'] = distinct_players_not_accented.query(f'player == "{row_id}"')["ID"].iloc[0]
         except:
-            pass
-
-    for index, row in players_salaries.iterrows():
-        row_id = row['ID']
-        try:
-            players_salaries.loc[index, 'ID'] = distinct_players_not_accented.query(f'player == "{row_id}"')["ID"].iloc[0]
-        except:
             if row_id[-3:] == ' jr':
                 new_row_id = row_id[:-3]
                 try:
@@ -293,3 +286,54 @@ def clean_salaries(year, dist_players: pd.DataFrame):
                 players_salaries.loc[index, 'ID'] = player
 
     return players_salaries
+
+
+def clean_contracts(year, dist_players: pd.DataFrame):
+    """Standarize names, try to convert them to IDs"""
+
+    distinct_players_not_accented = dist_players.copy()
+    distinct_players_not_accented['player'] = distinct_players_not_accented['player'].apply(lambda x: unidecode(x))
+    distinct_players_not_accented['player'] = distinct_players_not_accented['player'].apply(lambda x: x.lower())
+    distinct_players_not_accented['player'] = distinct_players_not_accented['player'].apply(lambda x: x.replace(".", ""))
+    distinct_players_not_accented['player'] = distinct_players_not_accented['player'].apply(lambda x: x.replace("'", ""))
+
+    with open(f'./data/raw_data/contracts/lengths/lengths_{year}.csv', 'r', encoding="UTF-8") as file:
+            contracts = pd.read_csv(file)
+
+    contracts['player'] = contracts['player'].apply(lambda x: unidecode(x))
+    contracts['player'] = contracts['player'].apply(lambda x: x.lower())
+    contracts['player'] = contracts['player'].apply(lambda x: x.replace(".", ""))
+    contracts['player'] = contracts['player'].apply(lambda x: x.replace("'", ""))
+    contracts
+
+    for index, row in contracts.iterrows():
+        row_id = row['player']
+        try:
+            contracts.loc[index, 'player'] = distinct_players_not_accented.query(f'player == "{row_id}"')["ID"].iloc[0]
+        except:
+            if row_id[-3:] == ' jr':
+                new_row_id = row_id[:-3]
+                try:
+                    player = distinct_players_not_accented.query(f'player == "{new_row_id}"')["ID"].iloc[0]
+                except:
+                    player = ''
+            elif row_id[-3:] == ' sr':
+                new_row_id = row_id[:-3]
+                try:
+                    player = distinct_players_not_accented.query(f'player == "{new_row_id}"')["ID"].iloc[0]
+                except:
+                    player = ''
+            else:
+                try:
+                    try:
+                        new_row_id = str(row_id) + ' sr'
+                        player = distinct_players_not_accented.query(f'player == "{new_row_id}"')["ID"].iloc[0]
+                    except:
+                        new_row_id = str(row_id) + ' jr'
+                        player = distinct_players_not_accented.query(f'player == "{new_row_id}"')["ID"].iloc[0]
+                except:
+                    player = ''
+            if len(player) > 0:
+                contracts.loc[index, 'player'] = player
+
+    return contracts

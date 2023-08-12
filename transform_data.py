@@ -1,4 +1,5 @@
 import pandas as pd
+import pickle
 
 distinct_teams = pd.read_csv('./data/cleaned_data/distinct_teams.csv')
 
@@ -155,3 +156,23 @@ def salary_as_perc_of_cap(player_id: str, players_salaries: pd.DataFrame, salary
 
     return salary_perc
 
+
+def contract_status(players_contracts: pd.DataFrame, stats):
+    """Fills stats with contract info"""
+
+    for index, row in players_contracts.iterrows():
+        player_id = players_contracts.loc[index, 'player']
+        contract_start = players_contracts.loc[index, "season"]
+        contract_end = players_contracts.loc[index, "season"] + players_contracts.loc[index, "contract_length"]
+        contract_seasons = list(range(contract_start, contract_end))
+        for con_season in contract_seasons:
+            if con_season != contract_seasons[-1]:
+                try:
+                    stats[con_season].loc[[f'{player_id}'], ['last_year_of_contract']] = False
+                except:
+                    pass
+            else:
+                try:
+                    stats[con_season].loc[[f'{player_id}'], ['last_year_of_contract']] = True
+                except:
+                    pass
