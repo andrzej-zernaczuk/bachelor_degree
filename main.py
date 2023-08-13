@@ -1,6 +1,6 @@
-from get_data import get_players_stats, get_teams_stats, get_players_advanced_stats, get_rookies_contracts, get_contracts_lengths
+# from get_data import get_players_stats, get_teams_stats, get_players_advanced_stats, get_rookies_contracts, get_contracts_lengths
 from clean_data import clean_stats, unique_players, consolidate_personal_awards, consolidate_salary_cap, clean_personal_awards, clean_playoffs, clean_salaries, clean_contracts
-from transform_data import games_played_perc, games_started_perc, average_minutes_played, winshares_per48, player_age, team_success, team_scores, salary_as_perc_of_cap, contract_status
+from transform_data import games_played_perc, games_started_perc, total_minutes_played, average_minutes_played, winshares_per48, player_efficiency, player_age, team_success, team_scores, salary_as_perc_of_cap, contract_status
 import pickle
 import pandas as pd
 
@@ -21,11 +21,11 @@ playoffs = {}
 distinct_players = pd.DataFrame(columns=["ID", "player"])
 
 # stats that aren't need for model
-players_columns_to_drop = ['Rk', 'Pos', 'FG', 'FGA', 'FG%', '3P',
+players_columns_to_drop = ['Rk', 'Pos', 'MP', 'FG', 'FGA', 'FG%', '3P',
                     '3PA', '3P%', '2P', '2PA', '2P%', 'eFG%',
                     'FT', 'FTA', 'FT%', 'ORB', 'DRB', 'TRB',
                     'AST', 'STL', 'BLK', 'TOV', 'PF', 'PTS']
-players_advanced_columns_to_drop = ['Rk', 'Pos', 'Age', 'MP', 'PER',
+players_advanced_columns_to_drop = ['Rk', 'Pos', 'Age',
                     'TS%', '3PAr', 'FTr', 'ORB%', 'DRB%', 'TRB%',
                     'AST%', 'STL%', 'BLK%', 'TOV%', 'USG%', 'OWS',
                     'DWS', 'WS/48', 'OBPM', 'DBPM', 'BPM', 'VORP']
@@ -34,8 +34,8 @@ teams_columns_to_drop = ['Rk', 'FG', 'FGA', 'FG%', '3P',
                     'FT', 'FTA', 'FT%', 'ORB', 'DRB', 'TRB',
                     'AST', 'STL', 'BLK', 'TOV', 'PF', 'PTS']
 
-scrap_start = datetime.now()
-print(f"########## Started data scrapping at {scrap_start} ##########")
+# scrap_start = datetime.now()
+# print(f"########## Started data scrapping at {scrap_start} ##########")
 
 # scrap necessary data
 # get_players_stats(years, game_types)
@@ -44,8 +44,8 @@ print(f"########## Started data scrapping at {scrap_start} ##########")
 # get_rookies_contracts(years)
 # get_contracts_lengths(years)
 
-scrap_finish = datetime.now()
-print(f"########## Finished data scrapping after {((scrap_finish - scrap_start).total_seconds())} seconds ##########")
+# scrap_finish = datetime.now()
+# print(f"########## Finished data scrapping after {((scrap_finish - scrap_start).total_seconds())} seconds ##########")
 
 cleanup_start = datetime.now()
 print(f"########## Started data cleanup at: {cleanup_start} ##########")
@@ -103,7 +103,7 @@ print(f"########## Started data transformation at: {transform_start} ##########"
 
 # transform data
 stats = {}
-stats_columns = ["ID", "salary_perc", "last_year_of_contract", "age", "games_played_perc", "games_started_perc", "avg_minutes_played", "WS48", "team_successes",
+stats_columns = ["ID", "salary_perc", "last_year_of_contract", "age", "games_played_perc", "games_started_perc", "minutes_played", "avg_minutes_played", "WS48", "PER", "team_successes",
               "defensive", "most_improved", "most_valuable", "most_valuable_finals", "sixth_man", "all_league", "all_def"]
 playoffs_scores = {}
 awards_columns = list(personal_awards.columns)
@@ -121,9 +121,11 @@ for year in years:
     for player_id in player_list:
         stats[year].loc[[f'{player_id}'], ['games_played_perc']] = games_played_perc(player_id, game_types, players_stats[year], teams_stats[year])
         stats[year].loc[[f'{player_id}'], ['games_started_perc']] = games_started_perc(player_id, game_types, players_stats[year], teams_stats[year])
-        stats[year].loc[[f'{player_id}'], ['avg_minutes_played']] = average_minutes_played(player_id, game_types, players_stats[year])
+        stats[year].loc[[f'{player_id}'], ['minutes_played']] = total_minutes_played(player_id, game_types, players_advanced_stats[year])
+        stats[year].loc[[f'{player_id}'], ['avg_minutes_played']] = average_minutes_played(player_id, game_types, players_advanced_stats[year])
         stats[year].loc[[f'{player_id}'], ['team_successes']] = team_success(player_id, players_stats[year], playoffs_scores[year])
-        stats[year].loc[[f'{player_id}'], ['WS48']] = winshares_per48(player_id, game_types, players_stats[year], players_advanced_stats[year])
+        stats[year].loc[[f'{player_id}'], ['WS48']] = winshares_per48(player_id, game_types, players_advanced_stats[year])
+        stats[year].loc[[f'{player_id}'], ['PER']] = player_efficiency(player_id, game_types, players_advanced_stats[year])
         stats[year].loc[[f'{player_id}'], ['age']] = player_age(player_id, players_stats[year])
         stats[year].loc[[f'{player_id}'], ['salary_perc']] = salary_as_perc_of_cap(player_id, players_salaries[year], salary_cap, year)
     for column in awards_columns:
