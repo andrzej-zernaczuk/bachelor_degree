@@ -173,11 +173,11 @@ def salary_as_perc_of_cap(player_id: str, players_salaries: pd.DataFrame, salary
         salary = int(players_salaries.query(f"ID == '{player_id}'")["salary"].iloc[0])
         salary_cap = int(salary_cap.query(f"year == {year}")["salary_cap"].iloc[0])
 
-        salary_perc = round(salary / salary_cap, 3)
+        salary_cap_perc = round(salary / salary_cap, 3)
     except:
-        salary_perc = 0
+        salary_cap_perc = 0
 
-    return salary_perc
+    return salary_cap_perc
 
 
 def contract_status(players_contracts: pd.DataFrame, stats):

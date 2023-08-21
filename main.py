@@ -103,7 +103,7 @@ print(f"########## Started data transformation at: {transform_start} ##########"
 
 # transform data
 stats = {}
-stats_columns = ["ID", "salary_perc", "last_year_of_contract", "age", "games_played_perc", "games_started_perc", "minutes_played", "avg_minutes_played", "WS48", "PER", "team_successes",
+stats_columns = ["ID", "salary_cap_perc", "last_year_of_contract", "age", "games_played_perc", "games_started_perc", "minutes_played", "avg_minutes_played", "WS48", "PER", "team_successes",
               "defensive", "most_improved", "most_valuable", "most_valuable_finals", "sixth_man", "all_league", "all_def"]
 playoffs_scores = {}
 awards_columns = list(personal_awards.columns)
@@ -127,7 +127,7 @@ for year in years:
         stats[year].loc[[f'{player_id}'], ['WS48']] = winshares_per48(player_id, game_types, players_advanced_stats[year])
         stats[year].loc[[f'{player_id}'], ['PER']] = player_efficiency(player_id, game_types, players_advanced_stats[year])
         stats[year].loc[[f'{player_id}'], ['age']] = player_age(player_id, players_stats[year])
-        stats[year].loc[[f'{player_id}'], ['salary_perc']] = salary_as_perc_of_cap(player_id, players_salaries[year], salary_cap, year)
+        stats[year].loc[[f'{player_id}'], ['salary_cap_perc']] = salary_as_perc_of_cap(player_id, players_salaries[year], salary_cap, year)
     for column in awards_columns:
         player = personal_awards.query(f"year == {year}")[f"{column}"].iloc[0]
         if not pd.isna(player):
@@ -147,7 +147,7 @@ with open('./data/stats.pickle', 'wb') as statistics:
 final_stats = {}
 for year in years:
     final_stats[year] = pd.DataFrame()
-    final_stats[year] = stats[year][(stats[year]["last_year_of_contract"] != 'noinfo') & (stats[year]["salary_perc"] != 0)]
+    final_stats[year] = stats[year][(stats[year]["last_year_of_contract"] != 'noinfo') & (stats[year]["salary_cap_perc"] != 0)]
 
 transform_finish = datetime.now()
 print(f"########## Finished data transformation after {((transform_finish - transform_start).total_seconds())} seconds ##########")
