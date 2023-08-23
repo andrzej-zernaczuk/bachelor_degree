@@ -1,0 +1,9 @@
+pandas
+numpy
+seaborn
+selenium
+unidecode
+matplotlib
+statsmodels
+scikit-learn
+shap

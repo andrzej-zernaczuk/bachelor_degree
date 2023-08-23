@@ -1,5 +1,4 @@
 import pandas as pd
-import pickle
 
 distinct_teams = pd.read_csv('./data/cleaned_data/distinct_teams.csv')
 
@@ -49,51 +48,75 @@ def games_started_perc(player_id: str, game_types: list, players_stats: pd.DataF
     return perc_games_started
 
 
-def average_minutes_played(player_id: str, game_types: list, players_stats: pd.DataFrame):
-    """Return average minutes played for each player as % of total games played by team"""
-    avg_minutes_played = 0
-    avg_minutes_played_x_games = 0
-    total_games = 0
-    minutes_played_per_game = 0
-    games_played = 0
+def total_minutes_played(player_id: str, game_types: list, players_advanced_stats: pd.DataFrame):
+    """Return minutes played for each player"""
+    minutes_played = 0
     for game_type in game_types:
         try:
-            minutes_played_per_game = players_stats[game_type].query(f"ID == '{player_id}'")["MP"].iloc[0]
-            games_played = players_stats[game_type].query(f"ID == '{player_id}'")["G"].iloc[0]
+            minutes_played += players_advanced_stats[game_type].query(f"ID == '{player_id}'")["MP"].iloc[0]
         except:
-            minutes_played_per_game += 0
-            games_played += 0
+            pass
 
-        avg_minutes_played_x_games += minutes_played_per_game * games_played
-        total_games += games_played
+    return minutes_played
+
+
+def average_minutes_played(player_id: str, game_types: list, players_advanced_stats: pd.DataFrame):
+    """Return average minutes played for each player"""
+    avg_minutes_played = 0
+    minutes_played = 0
+    total_games = 0
+    for game_type in game_types:
+        try:
+            minutes_played += players_advanced_stats[game_type].query(f"ID == '{player_id}'")["MP"].iloc[0]
+            total_games += players_advanced_stats[game_type].query(f"ID == '{player_id}'")["G"].iloc[0]
+        except:
+            pass
 
     if total_games != 0:
-        avg_minutes_played = round(avg_minutes_played_x_games/total_games, 2)
-    else:
-        avg_minutes_played = 0
+        avg_minutes_played = round(minutes_played/total_games, 3)
 
     return avg_minutes_played
 
 
-def winshares_per48(player_id: str, game_types: list, players_stats: pd.DataFrame, players_advanced_stats: pd.DataFrame):
+def winshares_per48(player_id: str, game_types: list, players_advanced_stats: pd.DataFrame):
     """Return win shares per 48 minutes for each player"""
     minutes_played = 0
     win_shares = 0
     win_share_48 = 0
     for game_type in game_types:
         try:
-            minutes_played = players_stats[game_type].query(f"ID == '{player_id}'")["MP"].iloc[0]
+            minutes_played = players_advanced_stats[game_type].query(f"ID == '{player_id}'")["MP"].iloc[0]
             win_shares = players_advanced_stats[game_type].query(f"ID == '{player_id}'")["WS"].iloc[0]
         except:
-            minutes_played += 0
-            win_shares += 0
+            pass
 
     if minutes_played != 0:
-        win_share_48 = round((win_shares/minutes_played) * 48, 2)
-    else:
-        win_share_48 = 0
+        win_share_48 = round((win_shares/minutes_played) * 48, 3)
 
     return win_share_48
+
+
+def player_efficiency(player_id: str, game_types: list, players_advanced_stats: pd.DataFrame):
+    """Return Player Efficiency Rating for each player"""
+    minutes_played = 0
+    efficiency = 0
+    efficiency_x_minutes = 0
+    efficiency_total = 0
+    for game_type in game_types:
+        try:
+            minutes_played = players_advanced_stats[game_type].query(f"ID == '{player_id}'")["MP"].iloc[0]
+            efficiency = players_advanced_stats[game_type].query(f"ID == '{player_id}'")["PER"].iloc[0]
+
+            efficiency_x_minutes += efficiency * minutes_played
+        except:
+            pass
+
+    if minutes_played != 0:
+        efficiency_total = round((efficiency_x_minutes/minutes_played), 3)
+    else:
+        efficiency_total = 0
+
+    return efficiency_total
 
 
 def player_age(player_id: str, players_stats: pd.DataFrame):
@@ -150,11 +173,11 @@ def salary_as_perc_of_cap(player_id: str, players_salaries: pd.DataFrame, salary
         salary = int(players_salaries.query(f"ID == '{player_id}'")["salary"].iloc[0])
         salary_cap = int(salary_cap.query(f"year == {year}")["salary_cap"].iloc[0])
 
-        salary_perc = round(salary / salary_cap, 2)
+        salary_cap_perc = round(salary / salary_cap, 3)
     except:
-        salary_perc = 0
+        salary_cap_perc = 0
 
-    return salary_perc
+    return salary_cap_perc
 
 
 def contract_status(players_contracts: pd.DataFrame, stats):
@@ -162,11 +185,11 @@ def contract_status(players_contracts: pd.DataFrame, stats):
 
     for index, row in players_contracts.iterrows():
         player_id = players_contracts.loc[index, 'player']
-        contract_start = players_contracts.loc[index, "season"]
+        previous_contract_end = players_contracts.loc[index, "season"] - 1
         contract_end = players_contracts.loc[index, "season"] + players_contracts.loc[index, "contract_length"]
-        contract_seasons = list(range(contract_start, contract_end))
+        contract_seasons = list(range(previous_contract_end, contract_end))
         for con_season in contract_seasons:
-            if con_season != contract_seasons[-1]:
+            if con_season != contract_seasons[0] and con_season != contract_seasons[-1]:
                 try:
                     stats[con_season].loc[[f'{player_id}'], ['last_year_of_contract']] = False
                 except:
