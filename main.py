@@ -83,18 +83,6 @@ print(f"########## Finished data cleanup after {((cleanup_finish - cleanup_start
 personal_awards.to_csv('./data/cleaned_data/personal_awards.csv', index=False, encoding='utf-8')
 salary_cap.to_csv('./data/cleaned_data/salary_cap.csv', index=False, encoding='utf-8')
 distinct_players.to_csv('./data/cleaned_data/distinct_players.csv', index=False, encoding='utf-8')
-with open('./data/cleaned_data/players_stats.pickle', 'wb') as play_stats:
-    pickle.dump(players_stats, play_stats)
-with open('./data/cleaned_data/players_advanced_stats.pickle', 'wb') as play_adv_stats:
-    pickle.dump(players_advanced_stats, play_adv_stats)
-with open('./data/cleaned_data/players_salaries.pickle', 'wb') as play_salaries:
-    pickle.dump(players_salaries, play_salaries)
-with open('./data/cleaned_data/players_contracts.pickle', 'wb') as play_contracts:
-    pickle.dump(players_contracts, play_contracts)
-with open('./data/cleaned_data/teams_stats.pickle', 'wb') as team_stats:
-    pickle.dump(teams_stats, team_stats)
-with open('./data/cleaned_data/playoffs.pickle', 'wb') as playoff:
-    pickle.dump(playoffs, playoff)
 
 print(f"########## Finished storing data at: {datetime.now()} ##########")
 
@@ -139,10 +127,6 @@ for year in years:
 for year_contracts in years_contracts:
     contract_status(players_contracts[year_contracts], stats)
 
-# store transformed data
-with open('./data/stats.pickle', 'wb') as statistics:
-    pickle.dump(stats, statistics)
-
 # clean final stats from incomplete data
 final_stats = {}
 for year in years:
@@ -153,7 +137,7 @@ transform_finish = datetime.now()
 print(f"########## Finished data transformation after {((transform_finish - transform_start).total_seconds())} seconds ##########")
 
 # store final data
-with open('./data/final_stats.pickle', 'wb') as final_statistics:
+with open('./data/cleaned_data/final_stats.pickle', 'wb') as final_statistics:
     pickle.dump(final_stats, final_statistics)
 
 end = datetime.now()
