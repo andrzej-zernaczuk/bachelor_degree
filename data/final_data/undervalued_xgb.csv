@@ -1,0 +1,6 @@
+ID,season,age,games_played_perc,avg_minutes_played,WS48,team_won_finals,team_lost_finals,team_lost_semifinals,team_lost_first_match,all_league,actual_salary_cap_as_perc,predicted_salary_cap_as_perc,difference
+malonka01,2003,39.0,98.85,36.36,0.181,0.0,0.0,0.0,1.0,0.0,3.4,22.35,18.95
+howardw01,2007,21.0,100.0,37.093,0.154,0.0,0.0,0.0,1.0,1.0,10.9,24.52,13.62
+krstine01,2007,23.0,31.71,32.615,0.108,0.0,0.0,0.0,1.0,0.0,3.4,15.05,11.65
+rosede01,2017,28.0,78.05,32.531,0.069,0.0,0.0,0.0,0.0,0.0,2.6,12.42,9.82
+artesro01,2003,23.0,85.23,34.253,0.149,0.0,0.0,0.0,1.0,0.0,12.5,21.72,9.22

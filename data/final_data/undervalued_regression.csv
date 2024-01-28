@@ -1,0 +1,6 @@
+const,ID,season,games_played_perc,avg_minutes_played,WS48,team_won_finals,team_lost_finals,team_lost_semifinals,team_lost_first_stage,most_valuable,actual_salary_cap_as_perc,predicted_salary_cap_as_perc,difference
+1.0,malonka01,2003,98.85,36.36,0.181,0.0,0.0,0.0,1.0,0.0,3.4,27.22,23.82
+1.0,paytoga01,2003,97.73,40.221,0.136,0.0,0.0,0.0,1.0,0.0,11.2,31.46,20.26
+1.0,howardw01,2007,100.0,37.093,0.154,0.0,0.0,0.0,1.0,0.0,10.9,26.2,15.3
+1.0,jacksst02,2003,98.11,29.471,0.102,1.0,0.0,0.0,0.0,0.0,2.3,12.25,9.95
+1.0,lowryky01,2014,96.63,36.43,0.196,0.0,0.0,0.0,1.0,0.0,19.0,28.68,9.68

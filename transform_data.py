@@ -1,6 +1,7 @@
 import pandas as pd
 
-distinct_teams = pd.read_csv('./data/cleaned_data/distinct_teams.csv')
+distinct_teams = pd.read_csv("./data/cleaned_data/distinct_teams.csv")
+
 
 def games_played_perc(player_id: str, game_types: list, players_stats: pd.DataFrame, teams_stats: pd.DataFrame):
     """Return games played for each player as % of total games played by team"""
@@ -73,7 +74,7 @@ def average_minutes_played(player_id: str, game_types: list, players_advanced_st
             pass
 
     if total_games != 0:
-        avg_minutes_played = round(minutes_played/total_games, 3)
+        avg_minutes_played = round(minutes_played / total_games, 3)
 
     return avg_minutes_played
 
@@ -91,7 +92,7 @@ def winshares_per48(player_id: str, game_types: list, players_advanced_stats: pd
             pass
 
     if minutes_played != 0:
-        win_share_48 = round((win_shares/minutes_played) * 48, 3)
+        win_share_48 = round((win_shares / minutes_played) * 48, 3)
 
     return win_share_48
 
@@ -112,7 +113,7 @@ def player_efficiency(player_id: str, game_types: list, players_advanced_stats: 
             pass
 
     if minutes_played != 0:
-        efficiency_total = round((efficiency_x_minutes/minutes_played), 3)
+        efficiency_total = round((efficiency_x_minutes / minutes_played), 3)
     else:
         efficiency_total = 0
 
@@ -129,13 +130,16 @@ def player_age(player_id: str, players_stats: pd.DataFrame):
     return age
 
 
-def team_scores(playoffs: pd.DataFrame):
+def team_playoffs_stage(playoffs: pd.DataFrame):
     """Converts team playoffs games to scores"""
-    scores = distinct_teams.copy()
-    scores['score'] = 0
-    for index, row in scores.iterrows():
+    stage = distinct_teams.copy()
+    stage["team_won_finals"] = 0
+    stage["team_lost_finals"] = 0
+    stage["team_lost_semifinals"] = 0
+    stage["team_lost_first_match"] = 0
+    for index, row in stage.iterrows():
         team = row["ID"]
-        check_team_history = playoffs[playoffs.isin([f'{team}'])].stack()
+        check_team_history = playoffs[playoffs.isin([f"{team}"])].stack()
         if check_team_history.empty:
             pass
         else:
@@ -143,13 +147,38 @@ def team_scores(playoffs: pd.DataFrame):
             if stage_id == 0:
                 stage_outcome = check_team_history.index[0][1]
                 if stage_outcome == "winner":
-                    scores.loc[index, 'score'] = 5
+                    stage.loc[index, "team_won_finals"] = 1
                 else:
-                    scores.loc[index, 'score'] = 3
+                    stage.loc[index, "team_lost_finals"] = 1
             elif stage_id in [1, 2]:
-                scores.loc[index, 'score'] = 2
+                stage.loc[index, "team_lost_semifinals"] = 1
             elif stage_id in list(range(3, 15)):
-                scores.loc[index, 'score'] = 1
+                stage.loc[index, "team_lost_first_match"] = 1
+
+    return stage
+
+
+def team_scores(playoffs: pd.DataFrame):
+    """Converts team playoffs games to scores"""
+    scores = distinct_teams.copy()
+    scores["score"] = 0
+    for index, row in scores.iterrows():
+        team = row["ID"]
+        check_team_history = playoffs[playoffs.isin([f"{team}"])].stack()
+        if check_team_history.empty:
+            pass
+        else:
+            stage_id = check_team_history.index[0][0]
+            if stage_id == 0:
+                stage_outcome = check_team_history.index[0][1]
+                if stage_outcome == "winner":
+                    scores.loc[index, "score"] = 5
+                else:
+                    scores.loc[index, "score"] = 3
+            elif stage_id in [1, 2]:
+                scores.loc[index, "score"] = 2
+            elif stage_id in list(range(3, 15)):
+                scores.loc[index, "score"] = 1
 
     return scores
 
@@ -164,6 +193,18 @@ def team_success(player_id: str, players_stats: pd.DataFrame, playoffs_scores: p
     success = playoffs_scores.query(f"ID == '{player_team}'")["score"].iloc[0]
 
     return success
+
+
+def team_stage(player_id: str, players_stats: pd.DataFrame, playoffs_scores: pd.DataFrame, stage: str):
+    """Returns team stage from playoffs"""
+    try:
+        player_team = players_stats["leagues"].query(f"ID == '{player_id}'")["Tm"].iloc[0]
+    except:
+        player_team = players_stats["playoffs"].query(f"ID == '{player_id}'")["Tm"].iloc[0]
+
+    team_stage_played = playoffs_scores.query(f"ID == '{player_team}'")[stage].iloc[0]
+
+    return team_stage_played
 
 
 def salary_as_perc_of_cap(player_id: str, players_salaries: pd.DataFrame, salary_cap: pd.DataFrame, year: int):
@@ -184,18 +225,18 @@ def contract_status(players_contracts: pd.DataFrame, stats):
     """Fills stats with contract info"""
 
     for index, row in players_contracts.iterrows():
-        player_id = players_contracts.loc[index, 'player']
+        player_id = players_contracts.loc[index, "player"]
         previous_contract_end = players_contracts.loc[index, "season"] - 1
         contract_end = players_contracts.loc[index, "season"] + players_contracts.loc[index, "contract_length"]
         contract_seasons = list(range(previous_contract_end, contract_end))
         for con_season in contract_seasons:
             if con_season != contract_seasons[0] and con_season != contract_seasons[-1]:
                 try:
-                    stats[con_season].loc[[f'{player_id}'], ['last_year_of_contract']] = False
+                    stats[con_season].loc[[f"{player_id}"], ["last_year_of_contract"]] = False
                 except:
                     pass
             else:
                 try:
-                    stats[con_season].loc[[f'{player_id}'], ['last_year_of_contract']] = True
+                    stats[con_season].loc[[f"{player_id}"], ["last_year_of_contract"]] = True
                 except:
                     pass

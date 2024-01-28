@@ -1,0 +1,6 @@
+const,ID,season,games_played_perc,avg_minutes_played,WS48,team_won_finals,team_lost_finals,team_lost_semifinals,team_lost_first_stage,most_valuable,actual_salary_cap_as_perc,predicted_salary_cap_as_perc,difference
+1.0,arenagi01,2011,85.23,25.027,0.013,0.0,0.0,0.0,1.0,0.0,33.2,4.75,28.45
+1.0,hamilri01,2011,67.07,27.236,0.058,0.0,0.0,0.0,0.0,0.0,30.1,5.27,24.83
+1.0,leeda02,2015,60.19,16.306,0.17,1.0,0.0,0.0,0.0,0.0,24.5,4.05,20.45
+1.0,finlemi01,2005,81.05,37.0,0.112,0.0,0.0,0.0,1.0,0.0,37.6,19.42,18.18
+1.0,conlemi01,2016,68.29,31.446,0.144,0.0,0.0,0.0,1.0,0.0,28.2,12.6,15.6
